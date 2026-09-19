@@ -24,6 +24,7 @@ function envOf(values: readonly (string | undefined)[]): JevEnv {
     CLOUDFLARE_API_TOKEN,
     CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_AI_GATEWAY_URL,
+    CLOUDFLARE_AI_GATEWAY_ID,
     LITELLM_API_KEY,
     LITELLM_PROXY_BASE_URL,
   ] = values
@@ -41,6 +42,7 @@ function envOf(values: readonly (string | undefined)[]): JevEnv {
     CLOUDFLARE_API_TOKEN,
     CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_AI_GATEWAY_URL,
+    CLOUDFLARE_AI_GATEWAY_ID,
     LITELLM_API_KEY,
     LITELLM_PROXY_BASE_URL,
   }
@@ -76,6 +78,7 @@ export function register(on: On) {
             beneath.env.get('CLOUDFLARE_API_TOKEN'),
             beneath.env.get('CLOUDFLARE_ACCOUNT_ID'),
             beneath.env.get('CLOUDFLARE_AI_GATEWAY_URL'),
+            beneath.env.get('CLOUDFLARE_AI_GATEWAY_ID'),
             beneath.env.get('LITELLM_API_KEY'),
             beneath.env.get('LITELLM_PROXY_BASE_URL'),
           ]),

@@ -84,9 +84,14 @@ plugin in the session.
 | `typesafe` | `TYPESAFE_API_KEY` (+ optional `TYPESAFE_BASE_URL`) | `POST {base}/v1/systemone` | `jev-latest` |
 | `openrouter` | `OPENROUTER_API_KEY` | `POST https://openrouter.ai/api/alpha/decisions` | `typesafe/jev-1.13` |
 | `vercel` | `AI_GATEWAY_API_KEY` (+ optional `AI_GATEWAY_BASE_URL`) | `POST {base}/evaluation-model` | `typesafe-ai/jev` |
-| `cloudflare` | `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`, or `CLOUDFLARE_AI_GATEWAY_URL` | `POST …/accounts/{id}/ai/run` | `typesafe/jev` |
+| `cloudflare` | `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (+ optional `CLOUDFLARE_AI_GATEWAY_ID`, `CLOUDFLARE_AI_GATEWAY_URL`) | `POST …/accounts/{id}/ai/run` | `typesafe/jev` |
 | `litellm` | `LITELLM_PROXY_BASE_URL` + `LITELLM_API_KEY` | `POST {base}/typesafe/v1/systemone` | `jev-latest` |
 | `custom` | `JEV_ENDPOINT` + `JEV_API_KEY` | the URL you give, TypeSafe's own body | `jev-latest` |
+
+Cloudflare's own AI Gateway is that same account endpoint plus a
+`cf-aig-gateway-id` header, which `CLOUDFLARE_AI_GATEWAY_ID` sets;
+`CLOUDFLARE_AI_GATEWAY_URL` replaces the URL entirely, for a proxy of your own
+that accepts the Workers AI REST body.
 
 `custom` is the escape hatch for anything else speaking the System One wire: a
 self-hosted proxy, new-api, a gateway not listed here.

@@ -35,6 +35,7 @@ export type JevEnv = {
   CLOUDFLARE_API_TOKEN?: string
   CLOUDFLARE_ACCOUNT_ID?: string
   CLOUDFLARE_AI_GATEWAY_URL?: string
+  CLOUDFLARE_AI_GATEWAY_ID?: string
   LITELLM_API_KEY?: string
   LITELLM_PROXY_BASE_URL?: string
 }
@@ -111,6 +112,11 @@ function join(base: string, path: string): string {
   return `${base.replace(/\/+$/, '')}${path}`
 }
 
+/** The value where it is set and not empty, else the fallback. */
+function or(value: string | undefined, fallback: string): string {
+  return value !== undefined && value !== '' ? value : fallback
+}
+
 /** Throws naming the variable a provider needs and did not get. */
 function need(env: JevEnv, name: keyof JevEnv, why: string): string {
   const value = env[name]
@@ -132,7 +138,7 @@ export const PROVIDERS: readonly JevProvider[] = [
     needs: ['TYPESAFE_API_KEY'],
     call: (env, request, model) =>
       nativeCall(
-        join(env.TYPESAFE_BASE_URL ?? 'https://api.typesafe.ai', '/v1/systemone'),
+        join(or(env.TYPESAFE_BASE_URL, 'https://api.typesafe.ai'), '/v1/systemone'),
         need(env, 'TYPESAFE_API_KEY', 'the TypeSafe API is keyed by it'),
         request,
         model,
@@ -162,12 +168,7 @@ export const PROVIDERS: readonly JevProvider[] = [
     model: 'typesafe-ai/jev',
     needs: ['AI_GATEWAY_API_KEY'],
     call: (env, request, model) => ({
-      url: join(
-        env.AI_GATEWAY_BASE_URL !== undefined && env.AI_GATEWAY_BASE_URL !== ''
-          ? env.AI_GATEWAY_BASE_URL
-          : 'https://ai-gateway.vercel.sh/v4/ai',
-        '/evaluation-model',
-      ),
+      url: join(or(env.AI_GATEWAY_BASE_URL, 'https://ai-gateway.vercel.sh/v4/ai'), '/evaluation-model'),
       headers: {
         authorization: `Bearer ${need(env, 'AI_GATEWAY_API_KEY', 'Vercel AI Gateway is keyed by it')}`,
         'content-type': 'application/json',
@@ -191,18 +192,24 @@ export const PROVIDERS: readonly JevProvider[] = [
     model: 'typesafe/jev',
     needs: ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID'],
     call: (env, request, model) => ({
-      // An AI Gateway URL, when set, stands in for the account endpoint.
-      url:
-        env.CLOUDFLARE_AI_GATEWAY_URL !== undefined && env.CLOUDFLARE_AI_GATEWAY_URL !== ''
-          ? join(env.CLOUDFLARE_AI_GATEWAY_URL, '/ai/run')
-          : `https://api.cloudflare.com/client/v4/accounts/${need(
-              env,
-              'CLOUDFLARE_ACCOUNT_ID',
-              'the account is part of the Workers AI URL',
-            )}/ai/run`,
+      // `CLOUDFLARE_AI_GATEWAY_URL` is the whole URL to POST to, for a proxy in
+      // front of Workers AI; it must accept the Workers AI REST body below.
+      // Cloudflare's own AI Gateway does not need it: it is the same account
+      // endpoint plus the `cf-aig-gateway-id` header.
+      url: or(
+        env.CLOUDFLARE_AI_GATEWAY_URL,
+        `https://api.cloudflare.com/client/v4/accounts/${need(
+          env,
+          'CLOUDFLARE_ACCOUNT_ID',
+          'the account is part of the Workers AI URL',
+        )}/ai/run`,
+      ),
       headers: {
         authorization: `Bearer ${need(env, 'CLOUDFLARE_API_TOKEN', 'Workers AI is keyed by it')}`,
         'content-type': 'application/json',
+        ...(or(env.CLOUDFLARE_AI_GATEWAY_ID, '') !== ''
+          ? { 'cf-aig-gateway-id': String(env.CLOUDFLARE_AI_GATEWAY_ID) }
+          : {}),
       },
       // Workers AI wraps the request: the questions go under `input`.
       body: JSON.stringify({
@@ -210,14 +217,7 @@ export const PROVIDERS: readonly JevProvider[] = [
         input: { state: request.state, questions: request.questions },
       }),
     }),
-    decode: (body, model) =>
-      // …and wraps the response in `{ result, success, errors }`, except where
-      // a gateway hands the model's own body straight back.
-      nativeDecode(
-        'cloudflare',
-        isRecord(body) && isRecord(body.result) ? body.result : body,
-        model,
-      ),
+    decode: (body, model) => decodeCloudflare(body, model),
   },
   {
     id: 'litellm',
@@ -286,6 +286,18 @@ export function providerOf(env: JevEnv): JevProvider {
 export function modelOf(provider: JevProvider, env: JevEnv, request: JevRequest): string {
   const named = request.model ?? env.JEV_MODEL
   return named !== undefined && named !== '' ? named : provider.model
+}
+
+/**
+ * Workers AI wraps the answer in `{ result, success, errors }` — a 200 may
+ * still carry `success: false`, which is an error, not an empty answer. A
+ * gateway that hands the model's own body straight back is read as it is.
+ */
+function decodeCloudflare(body: unknown, model: string): JevResult {
+  if (isRecord(body) && body.success === false) {
+    throw new Error(`$.jev.ask: Cloudflare Workers AI refused the call: ${reasonOf(JSON.stringify(body))}`)
+  }
+  return nativeDecode('cloudflare', isRecord(body) && isRecord(body.result) ? body.result : body, model)
 }
 
 /** Vercel AI Gateway calls a noul a `boolean`; everything else is unchanged. */
