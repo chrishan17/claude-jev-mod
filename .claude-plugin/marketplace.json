@@ -1,0 +1,19 @@
+{
+  "name": "jev-mod",
+  "owner": {
+    "name": "Chris Han",
+    "url": "https://github.com/chrishan17"
+  },
+  "metadata": {
+    "description": "Typed decisions in Claude Code: the $.jev noun over TypeSafe's Jev, through whichever provider you have a key for.",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "jev",
+      "source": "./",
+      "description": "Adds $.jev to the engine interface: ask Jev a map of Choice, Score and Noul questions over one state and read calibrated probabilities back.",
+      "category": "ai"
+    }
+  ]
+}

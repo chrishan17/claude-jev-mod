@@ -1,0 +1,4 @@
+{
+  "description": "Typed decisions: an engine.create step adds $.jev (ask) over $.env and $.http beneath; one request answers every question in parallel",
+  "modules": ["./register.ts"]
+}
