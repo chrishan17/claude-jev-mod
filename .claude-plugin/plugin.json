@@ -1,6 +1,6 @@
 {
   "name": "jev",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Typed decisions as a noun: adds $.jev in the engine.create fold, so any plugin asks Jev a map of Choice, Score and Noul questions over one state and reads calibrated probabilities back — through the TypeSafe API, OpenRouter, Vercel AI Gateway, Cloudflare Workers AI, a LiteLLM proxy or any TypeSafe-compatible endpoint, picked from the environment.",
   "author": {
     "name": "chris.han"
@@ -10,16 +10,7 @@
     "provider": {
       "type": "string",
       "title": "Provider",
-      "description": "Which gateway serves Jev. Leave on auto to use the first provider whose credentials are set.",
-      "options": [
-        "auto",
-        "typesafe",
-        "openrouter",
-        "vercel",
-        "cloudflare",
-        "litellm",
-        "custom"
-      ],
+      "description": "Which gateway serves Jev: auto, typesafe, openrouter, vercel, cloudflare, litellm or custom. auto uses the first provider whose credentials are set.",
       "default": "auto"
     },
     "model": {
