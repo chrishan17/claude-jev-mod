@@ -32,18 +32,11 @@ one from your environment.
 
 ## Install
 
-### 1. Turn function hooks on
+### 1. Check your Claude Code version
 
-Function hooks are behind a flag. Add it to the `env` block of
-`~/.claude/settings.json` (create the file or the block if absent):
-
-```json
-{
-  "env": {
-    "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
-  }
-}
-```
+Mods need **Claude Code v2.1.287 or later** and are on by default. Check with
+`claude --version`. If you set `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` during early
+access, remove it — v2.1.287+ ignores it.
 
 ### 2. Add this marketplace and install the plugin
 
@@ -59,14 +52,14 @@ In a Claude Code session:
 
 ### 3. Give it a key
 
-Add **one** provider's variables to that same `env` block. The mod reads the host
+Add **one** provider's variables to the `env` block of `~/.claude/settings.json`
+(create the file or block if absent). The mod reads the host
 process environment — Claude Code does **not** read a `.env` file — so this block,
 or an `export` in the shell that starts `claude`, is how a key arrives.
 
 ```json
 {
   "env": {
-    "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1",
     "TYPESAFE_API_KEY": "ts-…"
   }
 }
@@ -197,22 +190,6 @@ hook whose `$` it cannot follow, and a refused hook is *silently absent*. Every
 environment variable is spelled as a string literal at its own call site in
 `hooks/register.ts` for the same reason — a name the module does not spell is
 refused, and a noun of `$` may not be passed as a value at all.
-
----
-
-## 中文快速开始
-
-1. 在 `~/.claude/settings.json` 的 `env` 里打开函数式 hooks：
-   `"CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"`
-2. 会话里执行：
-   ```
-   /plugin marketplace add chrishan17/claude-jev-mod
-   /plugin install jev@jev-mod
-   ```
-3. 在同一个 `env` 块里填上你手上任意一家的密钥（上表任选一行），重启 Claude Code。
-
-之后任何插件都能用 `$.jev.ask({ state, questions })` 拿到带概率的类型化判断。没有配置
-任何一家时，第一次调用会直接报错并列出全部可用变量名——不会静默失败。
 
 ---
 
