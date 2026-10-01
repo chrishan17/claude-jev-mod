@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Typed decisions in Claude Code: the $.jev noun over TypeSafe's Jev, through whichever provider you have a key for.",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "plugins": [
     {

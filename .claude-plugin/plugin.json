@@ -1,6 +1,6 @@
 {
   "name": "jev",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Typed decisions as a noun: adds $.jev in the engine.create fold, so any plugin asks Jev a map of Choice, Score and Noul questions over one state and reads calibrated probabilities back — through the TypeSafe API, OpenRouter, Vercel AI Gateway, Cloudflare Workers AI, a LiteLLM proxy or any TypeSafe-compatible endpoint, picked from the environment.",
   "author": {
     "name": "chris.han"
