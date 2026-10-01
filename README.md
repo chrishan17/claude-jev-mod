@@ -223,6 +223,9 @@ claude --plugin-dir .
 # what the engine sees: the hooks, the $ calls, the env names
 claude plugin validate .
 
+# offline tests: all six provider dialects against a fake fetch, no network or key
+claude plugin test .
+
 # typecheck (needs .claude/types, which /plugin-types writes in-session)
 npx -y -p typescript@5 tsc -p tsconfig.json
 ```

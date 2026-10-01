@@ -1,10 +1,23 @@
 {
   "name": "jev",
-  "version": "0.3.2",
-  "description": "Typed decisions as a noun: adds $.jev in the engine.create fold, so any plugin asks Jev a map of Choice, Score and Noul questions over one state and reads calibrated probabilities back — through the TypeSafe API, OpenRouter, Vercel AI Gateway, Cloudflare Workers AI, a LiteLLM proxy or any TypeSafe-compatible endpoint, picked from the environment.",
+  "displayName": "Jev",
+  "version": "0.3.3",
+  "description": "Typed decisions as a noun: adds $.jev in the engine.create fold, so any plugin asks Jev a map of Choice, Score and Noul questions over one state and reads calibrated probabilities back — through the TypeSafe API, OpenRouter, Vercel AI Gateway, Cloudflare Workers AI, a LiteLLM proxy or any TypeSafe-compatible endpoint, set in the plugin's options or the environment.",
   "author": {
-    "name": "chris.han"
+    "name": "Chris Han",
+    "url": "https://github.com/chrishan17"
   },
+  "license": "MIT",
+  "repository": "https://github.com/chrishan17/claude-jev-mod",
+  "homepage": "https://github.com/chrishan17/claude-jev-mod",
+  "keywords": [
+    "jev",
+    "typesafe",
+    "decisions",
+    "system-one",
+    "openrouter",
+    "hooks"
+  ],
   "types": "./types/index.d.ts",
   "userConfig": {
     "provider": {
@@ -89,14 +102,5 @@
       "description": "Key for the custom endpoint, sent to that URL only.",
       "sensitive": true
     }
-  },
-  "homepage": "https://github.com/chrishan17/claude-jev-mod",
-  "keywords": [
-    "jev",
-    "typesafe",
-    "decisions",
-    "system-one",
-    "openrouter",
-    "hooks"
-  ]
+  }
 }

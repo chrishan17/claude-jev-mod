@@ -17,6 +17,7 @@
   },
   "include": [
     "hooks/**/*.ts",
+    "tests/**/*.ts",
     "types/**/*.d.ts",
     ".claude/types"
   ]
