@@ -48,6 +48,7 @@ function envOf(values: readonly (string | undefined)[]): JevEnv {
   }
 }
 
+/** The `userConfig` key for each variable, in the order `envOf` reads them. */
 const OPTION_KEYS = [
   'provider',
   'model',

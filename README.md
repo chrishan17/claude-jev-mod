@@ -52,8 +52,9 @@ In a Claude Code session:
 
 ### 3. Give it a key
 
-Open the plugin's options (`/plugin` → jev) and fill in **one** provider's key; keys are
-stored in secure storage. Alternatively add the variables to the `env` block of
+Open `/plugin`, choose the **Installed** tab, select jev and pick **Configure options**
+(Claude Code also offers the dialog when the plugin is first enabled). Fill in **one**
+provider's key; keys are kept in the system keychain, not in `settings.json`. Alternatively add the variables to the `env` block of
 `~/.claude/settings.json`, which is used when an option is empty. The environment path reads the host
 process environment — Claude Code does **not** read a `.env` file — so this block,
 or an `export` in the shell that starts `claude`, is how a key arrives.
@@ -120,7 +121,7 @@ What this mod reads, sends and where. Nothing here runs until another plugin cal
 `$.jev.ask`; the mod itself makes no request at startup.
 
 **Credentials it reads.** Each setting has two homes, and the plugin option wins:
-the plugin's own options (`/plugin` → jev → configure, or `/config`), where API keys are
+the plugin's own options (`/plugin` → Installed → jev → Configure options), where API keys are
 `sensitive` and held in secure storage rather than `settings.json`; and, when an option
 is empty, the environment variable of the same name (`JEV_PROVIDER`, `JEV_MODEL`,
 `JEV_ENDPOINT`, `JEV_API_KEY`, `TYPESAFE_API_KEY`, `TYPESAFE_BASE_URL`,
