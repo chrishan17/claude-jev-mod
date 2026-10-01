@@ -1,11 +1,104 @@
 {
   "name": "jev",
-  "version": "0.2.2",
-  "description": "Typed decisions as a noun: adds $.jev in the engine.create fold, so any plugin asks Jev a map of Choice, Score and Noul questions over one state and reads calibrated probabilities back \u2014 through the TypeSafe API, OpenRouter, Vercel AI Gateway, Cloudflare Workers AI, a LiteLLM proxy or any TypeSafe-compatible endpoint, picked from the environment.",
+  "version": "0.3.0",
+  "description": "Typed decisions as a noun: adds $.jev in the engine.create fold, so any plugin asks Jev a map of Choice, Score and Noul questions over one state and reads calibrated probabilities back — through the TypeSafe API, OpenRouter, Vercel AI Gateway, Cloudflare Workers AI, a LiteLLM proxy or any TypeSafe-compatible endpoint, picked from the environment.",
   "author": {
     "name": "chris.han"
   },
   "types": "./types/index.d.ts",
+  "userConfig": {
+    "provider": {
+      "type": "string",
+      "title": "Provider",
+      "description": "Which gateway serves Jev. Leave on auto to use the first provider whose credentials are set.",
+      "options": [
+        "auto",
+        "typesafe",
+        "openrouter",
+        "vercel",
+        "cloudflare",
+        "litellm",
+        "custom"
+      ],
+      "default": "auto"
+    },
+    "model": {
+      "type": "string",
+      "title": "Model",
+      "description": "Overrides the default model for every call. Ids are not portable between providers."
+    },
+    "typesafe_api_key": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for api.typesafe.ai, sent as the Authorization header to TypeSafe only.",
+      "sensitive": true
+    },
+    "typesafe_base_url": {
+      "type": "string",
+      "title": "TypeSafe base URL",
+      "description": "Optional. Replaces https://api.typesafe.ai."
+    },
+    "openrouter_api_key": {
+      "type": "string",
+      "title": "OpenRouter API key",
+      "description": "Key for openrouter.ai, sent to OpenRouter only.",
+      "sensitive": true
+    },
+    "ai_gateway_api_key": {
+      "type": "string",
+      "title": "Vercel AI Gateway key",
+      "description": "Key for Vercel AI Gateway, sent to that gateway only.",
+      "sensitive": true
+    },
+    "ai_gateway_base_url": {
+      "type": "string",
+      "title": "Vercel AI Gateway base URL",
+      "description": "Optional. Replaces https://ai-gateway.vercel.sh/v4/ai."
+    },
+    "cloudflare_api_token": {
+      "type": "string",
+      "title": "Cloudflare API token",
+      "description": "Workers AI token, sent to Cloudflare only.",
+      "sensitive": true
+    },
+    "cloudflare_account_id": {
+      "type": "string",
+      "title": "Cloudflare account ID",
+      "description": "Part of the Workers AI URL."
+    },
+    "cloudflare_ai_gateway_id": {
+      "type": "string",
+      "title": "Cloudflare AI Gateway ID",
+      "description": "Optional. Sent as the cf-aig-gateway-id header."
+    },
+    "cloudflare_ai_gateway_url": {
+      "type": "string",
+      "title": "Cloudflare gateway URL",
+      "description": "Optional. The whole URL to POST to, for your own Workers AI proxy."
+    },
+    "litellm_api_key": {
+      "type": "string",
+      "title": "LiteLLM API key",
+      "description": "Key for your LiteLLM proxy, sent to that proxy only.",
+      "sensitive": true
+    },
+    "litellm_proxy_base_url": {
+      "type": "string",
+      "title": "LiteLLM proxy base URL",
+      "description": "Your LiteLLM proxy."
+    },
+    "jev_endpoint": {
+      "type": "string",
+      "title": "Custom endpoint",
+      "description": "Any URL that speaks the System One wire."
+    },
+    "jev_api_key": {
+      "type": "string",
+      "title": "Custom endpoint key",
+      "description": "Key for the custom endpoint, sent to that URL only.",
+      "sensitive": true
+    }
+  },
   "homepage": "https://github.com/chrishan17/claude-jev-mod",
   "keywords": [
     "jev",

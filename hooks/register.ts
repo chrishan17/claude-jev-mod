@@ -1,4 +1,4 @@
-import type { EngineInterface, On } from 'claude-code'
+import type { EngineInterface, On, PluginOptions } from 'claude-code'
 
 import { jevOf } from './jev-of'
 import type { JevEnv } from './providers'
@@ -48,6 +48,35 @@ function envOf(values: readonly (string | undefined)[]): JevEnv {
   }
 }
 
+const OPTION_KEYS = [
+  'provider',
+  'model',
+  'jev_endpoint',
+  'jev_api_key',
+  'typesafe_api_key',
+  'typesafe_base_url',
+  'openrouter_api_key',
+  'ai_gateway_api_key',
+  'ai_gateway_base_url',
+  'cloudflare_api_token',
+  'cloudflare_account_id',
+  'cloudflare_ai_gateway_url',
+  'cloudflare_ai_gateway_id',
+  'litellm_api_key',
+  'litellm_proxy_base_url',
+] as const
+
+/**
+ * A `userConfig` value when the user set one, else what the environment held.
+ * `provider` reads `auto` as unset: that is the manifest's default, meaning
+ * "pick from the credentials".
+ */
+function pick(configured: unknown, fromEnv: string | undefined): string | undefined {
+  return typeof configured === 'string' && configured !== '' && configured !== 'auto'
+    ? configured
+    : fromEnv
+}
+
 /**
  * Registers the mod's one hook: its engine.create step adds `$.jev` over the
  * nouns beneath, the plugin's own `$` as core built.
@@ -57,15 +86,16 @@ function envOf(values: readonly (string | undefined)[]): JevEnv {
  * session started is picked up without a reload.
  *
  * @param on the engine's registrar
+ * @param options the manifest's `userConfig` values; each wins over its variable
  */
-export function register(on: On) {
+export function register(on: On, options: PluginOptions) {
   on('engine.create', async ($, e, next) => {
     const beneath = await next(e)
 
     const jev: EngineInterface['jev'] = jevOf({
       env: async () =>
         envOf(
-          await Promise.all([
+          (await Promise.all([
             beneath.env.get('JEV_PROVIDER'),
             beneath.env.get('JEV_MODEL'),
             beneath.env.get('JEV_ENDPOINT'),
@@ -81,7 +111,7 @@ export function register(on: On) {
             beneath.env.get('CLOUDFLARE_AI_GATEWAY_ID'),
             beneath.env.get('LITELLM_API_KEY'),
             beneath.env.get('LITELLM_PROXY_BASE_URL'),
-          ]),
+          ])).map((fromEnv, i) => pick(options[OPTION_KEYS[i] ?? ''], fromEnv)),
         ),
       fetch: async (url, init) => {
         // No `auth` handle: that one is the session's own credential and rides

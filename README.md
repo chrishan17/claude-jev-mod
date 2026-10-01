@@ -52,8 +52,9 @@ In a Claude Code session:
 
 ### 3. Give it a key
 
-Add **one** provider's variables to the `env` block of `~/.claude/settings.json`
-(create the file or block if absent). The mod reads the host
+Open the plugin's options (`/plugin` → jev) and fill in **one** provider's key; keys are
+stored in secure storage. Alternatively add the variables to the `env` block of
+`~/.claude/settings.json`, which is used when an option is empty. The environment path reads the host
 process environment — Claude Code does **not** read a `.env` file — so this block,
 or an `export` in the shell that starts `claude`, is how a key arrives.
 
@@ -112,6 +113,46 @@ as the gateway's `boolean` kind; confidence returns in
 provider as part of your setup, and please open an issue with what you see.
 
 ---
+
+## Data and network
+
+What this mod reads, sends and where. Nothing here runs until another plugin calls
+`$.jev.ask`; the mod itself makes no request at startup.
+
+**Credentials it reads.** Each setting has two homes, and the plugin option wins:
+the plugin's own options (`/plugin` → jev → configure, or `/config`), where API keys are
+`sensitive` and held in secure storage rather than `settings.json`; and, when an option
+is empty, the environment variable of the same name (`JEV_PROVIDER`, `JEV_MODEL`,
+`JEV_ENDPOINT`, `JEV_API_KEY`, `TYPESAFE_API_KEY`, `TYPESAFE_BASE_URL`,
+`OPENROUTER_API_KEY`, `AI_GATEWAY_API_KEY`, `AI_GATEWAY_BASE_URL`,
+`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AI_GATEWAY_URL`,
+`CLOUDFLARE_AI_GATEWAY_ID`, `LITELLM_API_KEY`, `LITELLM_PROXY_BASE_URL`). The
+environment fallback exists for CI and for development with `--plugin-dir`, where
+plugin options are not delivered. It writes no variable, and it never uses Claude
+Code's own Anthropic credential. A key is sent only as the `Authorization` header to
+the one provider selected, never anywhere else and never logged.
+
+**What it sends.** The `state` and `questions` that the calling plugin passes to
+`$.jev.ask` — for example the Bash command a guard is judging — plus the model id.
+Nothing else from your machine is attached: the mod does not read files, the
+transcript or other environment variables. Whatever a plugin puts in `state` leaves
+the machine, so a plugin should filter state to the fields the question needs.
+
+**Where it sends it.** One HTTPS `POST` per `ask`, to the selected provider only:
+
+| Provider | Host contacted by default |
+| --- | --- |
+| `typesafe` | `api.typesafe.ai` |
+| `openrouter` | `openrouter.ai` |
+| `vercel` | `ai-gateway.vercel.sh` |
+| `cloudflare` | `api.cloudflare.com` |
+| `litellm` | the host in `LITELLM_PROXY_BASE_URL` (yours) |
+| `custom` | the URL in `JEV_ENDPOINT` (yours) |
+
+Three optional settings point a provider at a host of your choosing instead:
+`TYPESAFE_BASE_URL`, `AI_GATEWAY_BASE_URL` and `CLOUDFLARE_AI_GATEWAY_URL`. With
+those unset, only the hosts in the table are contacted. There is no telemetry and no
+other host.
 
 ## Using the noun
 
